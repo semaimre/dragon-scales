@@ -37,8 +37,8 @@ Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldı
  - Arka plan sesi: https://freesound.org/s/544416/
  - Elma yeme sesi: https://mixkit.co/free-sound-effects/eat/ Chewing something crunchy
  - 
-## Oyun Linli
--
+## Oyun Linki
+-https://semaimre.github.io/labirentten-kacis/
 ## Temel Alınan Oyun
 - https://bijoykochar.itch.io/dragon-scales
 ## Çizim Uygulaması
