@@ -36,10 +36,15 @@ Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldı
  - Duvara çarpma sesi: https://mixkit.co/free-sound-effects/punch/ Quick ninja strike
  - Arka plan sesi: https://freesound.org/s/544416/
  - Elma yeme sesi: https://mixkit.co/free-sound-effects/eat/ Chewing something crunchy
-
+ - 
+## Oyun Linli
+-
 ## Temel Alınan Oyun
 - https://bijoykochar.itch.io/dragon-scales
 ## Çizim Uygulaması
 - https://www.pixilart.com/draw
+## Video linki
+-
+
   
 
