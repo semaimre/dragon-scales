@@ -1,5 +1,5 @@
 # Labirentten Kaçış
-Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldığında adım adım hareket eden yılan oyunu. Oyun, https://bijoykochar.itch.io/dragon-scales oyununun temel yapısından ilham alınarak tasarlanmıştır.
+Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldığında adım adım hareket eden yılan oyunu. Oyun, [Dragon Scales](https://bijoykochar.itch.io/dragon-scales) oyununun temel yapısından ilham alınarak tasarlanmıştır.
 ## Oynanış :video_game:
 ### Yön tuşlarıyla kontrol 
 - Yılan yalnızca yön tuşlarına basılınca hareket eder, klasik yılan oyunundaki gibi sürekli hareket halinde değildir.
@@ -27,22 +27,22 @@ Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldı
  - JavaScript
 ## Tasarım ve Kaynaklar :art:
 - Yılan karakterinin tasarımını pixilArt uygulamasından kendim yaptım.
-- Elma görseli: https://pin.it/20RpCHHUY
-- Duvar görseli: https://pin.it/6wHsJlfeR
-- Sarmaşık görseli: https://pin.it/25jg1pojF
-- Çıkış görseli:https://pin.it/4HRgMZgS4
+- Elma görseli:[elma]( https://pin.it/20RpCHHUY)
+- Duvar görseli: [duvar](https://pin.it/6wHsJlfeR)
+- Sarmaşık görseli:[sarmaşık](https://pin.it/25jg1pojF)
+- Çıkış görseli:https:[çıkış](//pin.it/4HRgMZgS4)
  ## Kullanılan Sesler :notes:
- - Sarmaşık sesi: https://pixabay.com/sound-effects/search/bush%20rustle/ Bush rustle
- - Duvara çarpma sesi: https://mixkit.co/free-sound-effects/punch/ Quick ninja strike
- - Arka plan sesi: https://freesound.org/s/544416/
- - Elma yeme sesi: https://mixkit.co/free-sound-effects/eat/ Chewing something crunchy
+ - Sarmaşık sesi: [Bush rustle](https://pixabay.com/sound-effects/search/bush%20rustle/ )
+ - Duvara çarpma sesi:[Quick ninja strike](https://mixkit.co/free-sound-effects/punch/) 
+ - Arka plan sesi: [Müzik]( https://freesound.org/s/544416/)
+ - Elma yeme sesi: [Chewing something crunchy](https://mixkit.co/free-sound-effects/eat/ )
  - 
 ## Oyun Linki
--https://semaimre.github.io/labirentten-kacis/
+- [Labirentten Kaçış](https://semaimre.github.io/labirentten-kacis/)
 ## Temel Alınan Oyun
-- https://bijoykochar.itch.io/dragon-scales
+- [Dragon Scales]( https://bijoykochar.itch.io/dragon-scales)
 ## Çizim Uygulaması
-- https://www.pixilart.com/draw
+- [PixilArt](https://www.pixilart.com/draw)
 ## Video linki
 -
 
