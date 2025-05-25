@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<title>Labiretten Kaçış</title>
+<style>
+    
+    canvas { background: hsl(262, 56%, 34%); display: block; margin: 20px auto; border:1px solid #7b1515; }
+
+    #gameContainer {
+     position: relative;
+     width: 880px;
+     height: 480px;
+     margin: 20px auto; /* Sayfada ortalamak için */
+    }
+
+    #startScreen { /*başlama ekrani divini css ile şekillendirdim*/
+    position: absolute;        
+    top: 50%;               /*Ytay ve düşeyde ekranın ortasında olmasını istiyoruz.*/
+    left: 50%;              
+    transform: translate(-50%, -50%); 
+
+    background: rgba(0, 0, 0, 0.5); /*arka plan rengi ve saydamlık oranı*/
+    color: rgb(212, 199, 199);
+
+    padding: 30px 50px;
+    height:150px;
+    width:250px;
+    border-radius: 5px;
+
+    text-align: center; /*satırların ortalanmasını sağlar*/
+    display: flex;           /*başlama ekranının içeriğini ortalar*/
+    justify-content: center;   
+    align-items: center;
+    z-index: 10;   
+             /* Canvas’ın üstünde gözükmesi için z index verdik */
+    font-size: large;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+</style>
+
+</head>
+<body>
+    <div id="gameContainer" style="position: relative; width: 880px; height: 480px; margin: 20px auto;">  <!-- game container div'i içine canvas ve startScreen'i ekleriz-->
+    <canvas id="game" width="880" height="480"></canvas>
+    <div id="startScreen">
+    LABİRENTTEN KAÇIŞ <br>
+    Başlamak için herhangi bir tuşa basın
+     </div>
+    </div>
+
+
+<script>
+const startScreen = document.getElementById("startScreen"); 
+const canvas = document.getElementById('game');
+const ekran = canvas.getContext('2d');
+const exit = {r:11,c:18};
+let gameOver = false; 
+let direction=null; 
+let fonBasladi = false;
+let gameStarted = false;
+const cellSize=40;
+let cols=canvas.width/cellSize;  //oyuna yerleştireceğimiz varlıklar için grid benzeri yapı
+let raws=canvas.height/cellSize;
+
+let snake = [{ r: 2, c: 2 }]; //yılanın oyun başındaki konumu
+const image={    //image nesnelerini tanımladık
+    duvar:new Image(),
+    snake_head: new Image(),
+    snake_body: new Image(),
+    elma: new Image(),
+    sarmasik: new Image(),
+    cikis:new Image()
+};
+image.duvar.src="assets/wall.jpg"; //image atamaları
+image.snake_head.src="assets/snake_head.png";
+image.snake_body.src="assets/snake_body.png";
+image.sarmasik.src="assets/sarmasik.png";
+image.elma.src="assets/elma.png";
+image.cikis.src="assets/cikis.png";
+
+const sounds = { //sound nesneleri tanımlanması ve ataması
+  elma: new Audio("assets/elmasesi.wav"),
+  carpma: new Audio("assets/duvaracarpma.wav"),
+  sarmasik: new Audio("assets/sarmasik.mp3"),
+  fon:new Audio("assets/fonsesi.mp3")
+};
+
+let walls=[{r:2, c:5} ,{r:3, c:5} ,{r:4, c:5} ,{r:4, c:6} , //labirent içi dyvar engelleri.
+{r:6, c:4} ,{r:7, c:4} ,{r:5, c:7} ,{r:4, c:7} ,{r:3, c:7} ,{r:3, c:8} ,{r:3, c:9} ,
+{r:4, c:6} ,{r:4, c:6} ,{r:4, c:6} ,{r:4, c:6} ,{r:4, c:6} ,
+{r:2, c:11} ,{r:3, c:11} ,{r:4, c:11} ,
+{r:7, c:11} ,{r:7, c:12} ,{r:6, c:12} ,{r:6, c:13} ,{r:6, c:14} ,{r:6, c:15} ,
+{r:5, c:15} ,{r:4, c:15} ,{r:3, c:15} ,{r:4, c:15} ,
+{r:3, c:14},{r:3, c:13} ,{r:4, c:13}, {r:10 ,c:17},{r:11, c:17}
+]
+
+for(let c=1; c<cols-1;c++)   //labirent sınırlarını belirleyen döngüler
+{walls.push({r:1,c:c});}
+for(let c=1; c<cols-5;c++)
+{walls.push({r:10,c:c});}
+for(let r=1; r<raws-1;r++)
+{walls.push({r:r,c:1});}
+for(let r=1; r<raws-1;r++)
+{walls.push({r:r,c:19});}
+
+
+let ivys=[ {r:7,c:5},{r:7,c:6},{r:7,c:7}, //labirent içindeki sarmaşık konumları (temel aldığım oyundaki void boşluklar yerine kullandım)
+{r:7,c:8},{r:6,c:8},{r:6,c:7},
+{r:2,c:7},{r:2,c:8},{r:2,c:13},{r:2,c:14},{r:2,c:15},
+]
+ 
+let apples=[{r:5,c:4},{r:4,c:9},{r:7,c:18},] //labirent içindeki elma konumları
+let yuklenenResimSayisi = 0;
+
+
+const toplamResim = 6; 
+function resimYuklendi() {
+  yuklenenResimSayisi++;
+  
+  if (yuklenenResimSayisi === toplamResim) { //resimlerin hepsi yüklendiyse
+    sounds.fon.loop = true; //fon müziğini döngüye alarak sürekli çal
+    sounds.fon.volume = 0.5; 
+    sounds.fon.load(); //görseller yüklendikten sonra fon müziğini hazırla, görseller yüklenmeden oyunu çizme
+    ciz();
+  }
+}
+
+image.duvar.onload =resimYuklendi;
+image.snake_head.onload =resimYuklendi;
+image.snake_body.onload =resimYuklendi;
+image.elma.onload=resimYuklendi;
+image.sarmasik.onload=resimYuklendi;
+image.cikis.onload=resimYuklendi;
+
+function startGame() {
+  startScreen.style.display = 'none';  // Fonksiyon çağırılırsa Başlangıç ekranını gizle
+  gameStarted = true;
+  sounds.fon.play();                    // Fon müziği başlat
+  ciz();                              // Oyunu çiz (veya başlat)
+}
+
+document.addEventListener("keydown", e => {
+     if (!gameStarted) { //herhangi bir tuşa basıldığında, gameStarted false ise startGame() fonksiyonunu çağır.
+    startGame();
+  }
+  const yeniYon = { 
+    ArrowUp: "up",
+    ArrowDown: "down",
+    ArrowLeft: "left",
+    ArrowRight: "right"
+  }[e.key];
+
+  if (!yeniYon) return; //yön tuşuna basılmadı ise(yeni yön verilmediyse) hareket etme.
+
+  if ((direction === "up" && yeniYon === "down") || //ters yöne dönülmesini engeller. örneğin yukarı gidiyorken kendi vücudu üstüne aşağı yönde dönemesin
+      (direction === "down" && yeniYon === "up") ||
+      (direction === "left" && yeniYon === "right") ||
+      (direction === "right" && yeniYon === "left")) {
+    return;
+  }
+
+  direction = yeniYon;
+  yilanHareket(); // Sadece yön verildiğinde hareket et
+ 
+});
+
+
+function ciz()
+{
+ekran.clearRect(0, 0, canvas.width, canvas.height); //ekranı temizler
+
+for (let i = 0; i < walls.length; i++) { // walls dizisinin elemanlarını drawImage ile çiz
+    let w = walls[i];
+    ekran.drawImage(image.duvar, w.c * cellSize, w.r * cellSize, cellSize, cellSize);
+  }
+
+for (let i = 0; i < ivys.length; i++) { //sarmaşıkları ekrana çizer
+    let s = ivys[i];
+    ekran.drawImage(image.sarmasik, s.c * cellSize, s.r * cellSize, cellSize, cellSize);
+  }
+ for (let i = 0; i < apples.length; i++) { //elmaları ekrana çizer
+    let e = apples[i];
+    ekran.drawImage(image.elma, e.c * cellSize, e.r * cellSize, cellSize, cellSize);
+  }
+   for (let i = 0; i < snake.length; i++) {
+    let k = snake[i];
+    if (i === 0) {
+      // Yılanın başı
+      ekran.drawImage(image.snake_head, k.c * cellSize, k.r * cellSize, cellSize, cellSize);
+    } else {
+      // Yılanın gövdesi
+      ekran.drawImage(image.snake_body, k.c * cellSize, k.r * cellSize, cellSize, cellSize);
+    }
+  }
+    ekran.drawImage(image.cikis, exit.c * cellSize,exit.r * cellSize,cellSize,cellSize);
+}
+
+function yilanHareket()
+{
+if (!direction||gameOver) return;  //direction null ise veya oyun bittiyse hareket etme
+
+  const head = { ...snake[0] };
+
+  if (direction === "up") head.r -= 1; //verilen yöne göre yılanın kafasını hareket ettir.
+  if (direction === "down") head.r += 1;
+  if (direction === "left") head.c -= 1;
+  if (direction === "right") head.c += 1;
+
+  snake.unshift(head); //hareket sonucu yeni kafayı ekle
+
+    if(!elmayendimi(head, apples)) //elma yenmediyse snake dizisinin son elemanını(yani kuyruğu) sil.
+        {snake.pop();}
+
+    if(duvaracarptimi(head, walls))
+        { sounds.carpma.play(); //yılan duvara çarptıysa ses efektini oynat
+        if (confirm("Duvara çarptın! Yeniden başlamak ister misin?")) { //kullanıcı oyunu tekrar oynamak isterse restart fonksiyonunu çağır.
+         restartGame();}
+        else {
+        alert("Oyun sona erdi."); //istemezse oyunu bitir.
+        gameOver = true;
+        }
+        }
+    
+    if (ivys.some(s => s.r === head.r && s.c === head.c)) { //yılan sarmaşık içine girdiyse ses çalmaya başla
+         if (sounds.sarmasik.paused) { //sarmaşık sesinin üst üste çalmaması için
+        sounds.sarmasik.currentTime = 0;
+        sounds.sarmasik.play();
+         }
+     }
+
+    if(sarmasigaDolandimi(snake,ivys)){ //yılan sarmaşığa tamamen dolandıysa
+        if (confirm("Yılan sarmaşıktan Kurtulamadı! Tekrar oynamak ister misin?")) {
+             restartGame();}
+        else {
+             alert("Oyun sona erdi.");
+            gameOver = true;
+            }
+    return;
+    }
+    if (cikis(head, exit)) {
+        if(confirm("Tebrikler, çıkışı buldun! Tekrar oynamak istermisin?"))
+              {restartGame()
+             }
+        else return;      
+}
+
+ciz();
+}
+
+function elmayendimi(head, apples) {
+for (let i = 0; i < apples.length; i++) { 
+    if (apples[i].r === head.r && apples[i].c === head.c) { //elma yendiyse
+      apples.splice(i, 1); // Elmayı elma listesinden çıkar
+       sounds.elma.play(); //elma yeme sesi çıkart
+      return true; // Elma yennme durumu
+    }
+  }
+  return false; 
+}
+
+function duvaracarptimi(head,walls) //duvara carptiysa true döndürür
+{
+    return walls.some(walls => walls.r === head.r && walls.c === head.c); //yılanın kafası ile duvarların karşılaştırılması
+}
+
+function sarmasigaDolandimi(snake,ivys){ //yılan dizisinin tamamı sarmaşık içindeyse true döndürür
+    return snake.every(parca => {
+    return ivys.some(sarmasik => sarmasik.r === parca.r && sarmasik.c === parca.c);
+  });
+}
+
+function restartGame() { //sayfayı yenileyerek oyunu tekrardan başlatır
+  location.reload(); 
+}
+
+function cikis(head,exit)
+ {return head.r === exit.r && head.c === exit.c;}
+</script>
+</body>
+</html>
