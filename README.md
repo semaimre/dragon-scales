@@ -44,7 +44,7 @@ Bir web tarayıcısı üzerinde çalışan, yalnızca yön tuşlarına basıldı
 ## Çizim Uygulaması
 - [PixilArt](https://www.pixilart.com/draw)
 ## Video linki
--
+- [Video](https://youtu.be/SbNFntk7VWo)
 
   
 
